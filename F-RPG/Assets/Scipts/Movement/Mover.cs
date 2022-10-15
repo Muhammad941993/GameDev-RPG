@@ -1,47 +1,63 @@
-using System;
 using UnityEngine;
 using UnityEngine.AI;
+using RPG.Combat;
+using RPG.Core;
 
-public class Mover : MonoBehaviour
+namespace RPG.Movement
 {
-   // [SerializeField] Transform targer;
-    NavMeshAgent NavMesh;
-    [SerializeField] Animator animator;
-   
+    public class Mover : MonoBehaviour , IAction
 
-
-    // Start is called before the first frame update
-    void Start()
     {
-        NavMesh = GetComponent<NavMeshAgent>();
-       // NavMesh.destination = targer.position;
-    }
+        // [SerializeField] Transform targer;
+        NavMeshAgent NavMesh;
+        [SerializeField] Animator animator;
+        ActionScheduler actionScheduler;
+        Health health;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetMouseButton(0))
+        // Start is called before the first frame update
+        void Start()
         {
-            MoveToMouse();
+            health = GetComponent<Health>();
+            actionScheduler = GetComponent<ActionScheduler>();
+            NavMesh = GetComponent<NavMeshAgent>();
+            // NavMesh.destination = targer.position;
         }
-        UpdateAnimator();
-    }
 
-    private void UpdateAnimator()
-    {
-        Vector3 navVelocity = NavMesh.velocity;
-        Vector3 localVelocity = transform.InverseTransformDirection(navVelocity);
-        float speed = localVelocity.z;
-        animator.SetFloat("Blend", speed);
-    }
+        // Update is called once per frame
+        void Update()
+        {
+            if (health.IsDead()) { NavMesh.enabled = false; }
+            UpdateAnimator();
+        }
 
-    void MoveToMouse()
-    {
-        Ray Ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit Hit;
-        bool hashit =   Physics.Raycast(Ray, out Hit);
+        private void UpdateAnimator()
+        {
+            Vector3 navVelocity = NavMesh.velocity;
+            Vector3 localVelocity = transform.InverseTransformDirection(navVelocity);
+            float speed = localVelocity.z;
+            animator.SetFloat("Blend", speed);
+           
+        }
 
-        if (hashit)
-            NavMesh.destination = Hit.point;
+        public void StartMoveAction(Vector3 distenation)
+        {
+            //  GetComponent<Fighter>().Cancel();
+            actionScheduler.StartAction(this);
+            MoveTo(distenation);
+        }
+
+        public void MoveTo(Vector3 distenation)
+        {
+            NavMesh.destination = distenation;
+            NavMesh.isStopped = false;
+        }
+
+        public void Cancel()
+        {
+          
+            NavMesh.isStopped = true;
+        }
+
+       
     }
 }
