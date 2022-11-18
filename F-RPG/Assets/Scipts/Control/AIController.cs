@@ -21,6 +21,8 @@ namespace RPG.Control
         [SerializeField]float SuspetionTime = 5f;
         [SerializeField] float WayPointTolerance = 1f;
         [SerializeField] PatrolPath patrolPath;
+        [Range(0,1)]
+        [SerializeField] float PatrolSpeedFraction = 0.2f;
         ActionScheduler actionScheduler;
         int CurrentWayPointIntIndex = 0;
         [SerializeField] float DewillingTime = 2f;
@@ -91,7 +93,7 @@ namespace RPG.Control
 
             if(DewillingTime < TimeScienceArriveToPoint)
             {
-                mover.StartMoveAction(nextPosition);
+                mover.StartMoveAction(nextPosition,PatrolSpeedFraction);
             }
            
         }

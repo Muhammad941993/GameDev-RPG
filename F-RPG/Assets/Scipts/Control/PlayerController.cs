@@ -44,10 +44,11 @@ namespace RPG.Control
 
                 if (!fighter.CanAttack(target.gameObject)) continue;
 
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonDown(0))
                 {
+
                     fighter.Attack(target.gameObject);
-                    print("combat");
+                    
 
                 }
                 return true;
@@ -66,8 +67,10 @@ namespace RPG.Control
             {
                 if (Input.GetMouseButton(0))
                 {
-                    mover.StartMoveAction(Hit.point);
-                    print("move");
+                    fighter.Cancel();
+                   
+                    mover.StartMoveAction(Hit.point , 1f);
+                   
                 }
 
                 return true;

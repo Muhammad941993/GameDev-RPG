@@ -7,10 +7,12 @@ namespace RPG.Combat
 
     public class Fighter : MonoBehaviour, IAction
     {
-        Health target;
+       [SerializeField] Health target;
         [SerializeField] float weaponRange = 2f;
         [SerializeField] float timeBtweenAttack = 1f;
         [SerializeField] float DamageAmount;
+        [SerializeField] GameObject WeaponPrefab = null;
+        [SerializeField] Transform WeaponPosition = null;
         float timeScinceLastAttack = 0;
          Mover mover;
         ActionScheduler actionScheduler;
@@ -21,33 +23,37 @@ namespace RPG.Combat
             anim = GetComponent<Animator>();
             actionScheduler = GetComponent<ActionScheduler>();
             mover = GetComponent<Mover>();
+
+            Instantiate(WeaponPrefab, WeaponPosition);
         }
 
         // Update is called once per frame
         void Update()
         {
             timeScinceLastAttack += Time.deltaTime;
-
+           
             if (target == null) return;
+            
             if (target.IsDead()) return;
 
-            if (TargetInRange())
+            if (!TargetInRange())
+            {
+                mover.MoveTo(target.transform.position, 1f);
+            }
+            else
             {
                 mover.Cancel();
                 //Cancel();
                 AttackBehaviour();
-
-
-            }
-            else
-            {
-                mover.MoveTo(target.transform.position);
             }
 
-
+            
         }
+
+        
         void AttackBehaviour()
         {
+
             transform.LookAt(target.transform);
             if (timeScinceLastAttack > timeBtweenAttack)
             {
@@ -66,7 +72,7 @@ namespace RPG.Combat
         {
             actionScheduler.StartAction(this);
             target = combatTarget.transform.GetComponent<Health>();
-          //  Debug.Log("Attack");
+         
         }
 
 
@@ -75,15 +81,17 @@ namespace RPG.Combat
             anim.ResetTrigger("attack");
             anim.SetTrigger("cancelAttack");
             target = null;
-           
+            mover.Cancel();
+           //  Debug.Log("callll");
+
         }
 
-       public bool CanAttack(GameObject combatTarget)
+        public bool CanAttack(GameObject combatTarget)
         {
             if (combatTarget == null) return false;
 
-            target = combatTarget.transform.GetComponent<Health>();
-            return (target != null && !target.IsDead());
+           Health ntarget = combatTarget.transform.GetComponent<Health>();
+            return (ntarget != null && !ntarget.IsDead());
         }
 
         void Hit()
