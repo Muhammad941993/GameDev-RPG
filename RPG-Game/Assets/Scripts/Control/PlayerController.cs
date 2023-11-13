@@ -26,7 +26,6 @@ namespace RPG.Control
 
             if (InteractWithMovement()) return;
 
-            print("the end");
         }
 
         private bool InteractWithCombat()
@@ -44,7 +43,6 @@ namespace RPG.Control
                     fighter.Attack(target.gameObject);
                 }
                 return true;
-
             }
             return false;
         }
@@ -55,7 +53,7 @@ namespace RPG.Control
             bool move = Physics.Raycast(GetMouseRay(), out hit);
             if (move)
             {
-                if (Input.GetMouseButton(0))
+                if (Input.GetMouseButtonDown(0))
                 {
                     mover.StartMoveAction(hit.point);
                 }

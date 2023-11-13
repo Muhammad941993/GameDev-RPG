@@ -10,13 +10,14 @@ namespace RPG.Combat
         [SerializeField] float fightDistance = 2;
         [SerializeField] float timeBetweenAttacks = 1;
 
-
         Health target;
         Mover mover;
         Animator animator;
         ActionScheduler actionSheduler;
 
         float timeScienceLastAttack = float.PositiveInfinity;
+        [SerializeField] int damageAmount;
+
         private void Start()
         {
             mover = GetComponent<Mover>();
@@ -55,7 +56,6 @@ namespace RPG.Combat
             TriggerAttack();
             transform.LookAt(target.transform.position);
             timeScienceLastAttack = 0;
-
         }
 
         private void TriggerAttack()
@@ -67,7 +67,7 @@ namespace RPG.Combat
         //Animation Event
         void Hit()
         {
-            target?.TakeDamage(5);
+            target?.TakeDamage(damageAmount);
         }
 
         public void Attack(GameObject combatTarget)
@@ -75,13 +75,13 @@ namespace RPG.Combat
             if (combatTarget == null) return;
             target = combatTarget.GetComponent<Health>();
             actionSheduler.StartAction(this);
-            print("Attack");
         }
 
         public void Cancel()
         {
             target = null;
             StopAttack();
+            mover.Cancel();
         }
 
         private void StopAttack()
